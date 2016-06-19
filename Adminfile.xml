@@ -39,7 +39,7 @@
     <SelectableItemCustomization Id="SQLV1" Hidden="no" Selected="no" FriendlyName="Microsoft SQL Server Data Tools" />
     <SelectableItemCustomization Id="PowerShellToolsV1" Hidden="no" Selected="no" FriendlyName="PowerShell Tools for Visual Studio" />
     <SelectableItemCustomization Id="SilverLight_Developer_KitV1" Hidden="no" Selected="no" FriendlyName="Silverlight Development Kit" />
-    <SelectableItemCustomization Id="Windows10_ToolsAndSDKV10" Hidden="no" Selected=yes FriendlyName="Tools (1.3.2) and Windows 10 SDK (10.0.10586)" />
+    <SelectableItemCustomization Id="Windows10_ToolsAndSDKV10" Hidden="no" Selected="yes" FriendlyName="Tools (1.3.2) and Windows 10 SDK (10.0.10586)" />
     <SelectableItemCustomization Id="Win10_EmulatorV1" Selected="no" FriendlyName="Emulators for Windows 10 Mobile (10.0.10240)" />
     <SelectableItemCustomization Id="Win10_EmulatorV2" Hidden="no" Selected="no" FriendlyName="Emulators for Windows 10 Mobile (10.0.10586)" />
     <SelectableItemCustomization Id="XamarinVSCoreV4" Hidden="yes" Selected="yes" FriendlyName="C#/.NET (Xamarin v4.1.0)" />
