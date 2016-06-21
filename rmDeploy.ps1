@@ -1,7 +1,7 @@
 Login-AzureRmAccount
 
 $global:bagoName = "bagodev"
-$global:bagoiteration = "5"
+$global:bagoiteration = "6"
 $rgName = "TheBoat"
 $rg = Get-AzureRmResourceGroup
 $location = $rg.Location
@@ -41,7 +41,7 @@ $vmConfig = New-AzureRmVMConfig -VMName $vmName -VMSize "Standard_DS11_v2"
 
 
 #Set the Windows operating system configuration and add the NIC
-$vm = Set-AzureRmVMOperatingSystem -VM $vmConfig -Windows -Comme $vmName -Credential $cred -ProvisionVMAgent -EnableAutoUpdate -WinRMHttps  
+$vm = Set-AzureRmVMOperatingSystem -VM $vmConfig -Windows -ComputerName $vmName -Credential $cred -ProvisionVMAgent -EnableAutoUpdate -WinRMHttp  
 
 $vm = Add-AzureRmVMNetworkInterface -VM $vm -Id $nic.Id
 
@@ -57,8 +57,8 @@ $osDiskUri = '{0}vhds/{1}{2}.vhd' -f $storageAcc.PrimaryEndpoints.Blob.ToString(
 ##We found this URL in the local JSON template in the previous sections.
 #$vm = Set-AzureRmVMOSDisk -VM $vmConfig -Name $osDiskName -VhdUri $osDiskUri -CreateOption fromImage -SourceImageUri https://theboat1676.blob.core.windows.net/system/Microsoft.Compute/Images/backup-vhd/bagodev-osDisk.9a0157cc-2270-41b8-ac2b-a2a64403d3a9.vhd -Windows
 $vm
-$vm = Set-AzureRmVMOSDisk -VM $vmConfig -Name "bagodev-osDisk" -VhdUri $osDiskUri -CreateOption fromImage -SourceImageUri https://theboat1676.blob.core.windows.net/system/Microsoft.Compute/Images/backup-vhd/bagodev-osDisk.9a0157cc-2270-41b8-ac2b-a2a64403d3a9.vhd -Windows
+$vm = Set-AzureRmVMOSDisk -VM $vmConfig -Name "osDisk" -VhdUri $osDiskUri -CreateOption fromImage -SourceImageUri https://theboat1676.blob.core.windows.net/system/Microsoft.Compute/Images/backup-vhd/bagodev-osDisk.9a0157cc-2270-41b8-ac2b-a2a64403d3a9.vhd -Windows
 
-
+$vm
 #Create the new VM
 New-AzureRmVM -ResourceGroupName $rgName -Location $location -VM $vm
