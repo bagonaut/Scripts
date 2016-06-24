@@ -26,6 +26,13 @@ function Get-TargetResource
         $adminContents = $wc.DownloadString("https://raw.githubusercontent.com/bagonaut/Scripts/master/Adminfile.xml")
         $adminContents | out-file C:\prereq\AdminFile_final.xml -Encoding ascii #vs requires an ascii xml file...
     }
+    
+    if (-Not [System.IO.File]::Exists("C:\prereq\AndroidSetup.ps1")) {
+        Write-output "Downloading Android Setup script";
+        $wc = New-Object System.Net.WebClient
+        $adminContents = $wc.DownloadString("https://raw.githubusercontent.com/bagonaut/Scripts/master/AndroidSetup.ps1")
+        $adminContents | out-file C:\prereq\AndroidSetup.ps1 
+    }
     if (-Not [System.IO.File]::Exists("C:\prereq\VS.iso")) {
         Write-output "Downloading iso (Visual Studio 2015 Community Image)";
         $wc = New-Object System.Net.WebClient
@@ -89,14 +96,7 @@ function Set-TargetResource
     if ($Ensure -eq 'Present')
     {
         Write-Verbose 'Installing VS 2015 ...'
-#        $loadInf = '@
-#[Setup]
-#Lang=english
-#Dir=C:\Program Files (x86)\Microsoft VS 2015
-#Group=Visual Studio 2015
-#NoIcons=0
-#Tasks=desktopicon,addcontextmenufiles,addcontextmenufolders,addtopath
-#        @'
+
 
         # Populated by test function
         $adminFile = "C:\prereq\AdminFile_final.xml"
@@ -109,8 +109,8 @@ function Set-TargetResource
         #$malwareConfigContents | out-file C:\prereq\malwareConfig.json -Encoding ascii -Force   
         #since this is azure1.5 , I have no idea how to config the malwareservice. I'm going to murder it.
         #no dice, use Set-MpPreference to confiugre antimalware
-        Set-MpPreference -ExclusionPath "C:\bagoxam;'C:\Program Files (x86)\Microsoft Visual Studio 14.0\'"
-        Set-MpPreference -ExclusionProcess "vs_community.exe;devenv.exe;secondaryInstaller.exe"
+        Set-MpPreference -ExclusionPath "C:\bagoxam;'C:\Program Files (x86)\Microsoft Visual Studio 14.0\';C:\prereq\AndroidSDK;"
+        Set-MpPreference -ExclusionProcess "vs_community.exe;devenv.exe;secondaryInstaller.exe;java.exe"
 
         Set-MpPreference -DisableRealtimeMonitoring $true
         $FirstCD = get-PSDrive | where-object {$_.Free -eq 0}
@@ -123,6 +123,7 @@ function Set-TargetResource
         $startTime = [System.DateTime]::Now
         try{
         Start-Process -FilePath $installerPath -ArgumentList $args -Wait
+        C:\prereq\AndroidSetup.ps1
         }
         catch{
             Write-Output $_
