@@ -18,6 +18,11 @@ $Env:Path = $PathVar
 [Environment]::SetEnvironmentVariable("Path", $Env:Path, [System.EnvironmentVariableTarget]::Machine)
 #xcopy /E /Y C:\prereq\AndroidSDK\android-sdk-windows\platforms 'C:\Program Files (x86)\Android\android-sdk\platforms'
 new-alias -name y -value "out-null" -Force #squelch extra y
+y
 C:\prereq\pressy.exe # Accept Eulas
-android.bat update sdk -u
+$updateCmd = [System.IO.Path]::Combine($Env:ANDROID_HOME, "tools\android.bat")
+$updateArgs = "update sdk -u"
+cd ([System.IO.Path]::Combine($Env:ANDROID_HOME, "tools")) #Your java treachery knows no bounds
+Invoke-Expression " & '$updateCmd' $updateArgs"
 sleep(100) #ensure this script does not return until y stops
+
