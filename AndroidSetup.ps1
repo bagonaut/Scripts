@@ -8,7 +8,7 @@ $Android_Root = "C:\Program Files (x86)\Android\"
 if (-Not [System.IO.Directory]::Exists($Env:ANDROID_HOME)) {Write-output "Making Android Home directory "; md $Env:ANDROID_HOME}
 [System.IO.Compression.ZipFile]::ExtractToDirectory($AndroidZip, $Android_Root)
 #Rename to match Visual Studio
-ren "C:\Program Files (x86)\Android\android-sdk-windows" $Env:ANDROID_HOME
+XCOPY /E /Y "C:\Program Files (x86)\Android\android-sdk-windows"  $Env:ANDROID_HOME
 #download Eula Acceptor
 Start-BitsTransfer -Source "https://github.com/bagonaut/Scripts/raw/master/pressy.exe" -Destination "C:\prereq\pressy.exe"
 #Environment vars in machine for Future use
@@ -17,5 +17,7 @@ $PathVar = [System.String]::concat("$Env:Path;", "$Env:Android_Home\Tools;", "$E
 $Env:Path = $PathVar 
 [Environment]::SetEnvironmentVariable("Path", $Env:Path, [System.EnvironmentVariableTarget]::Machine)
 #xcopy /E /Y C:\prereq\AndroidSDK\android-sdk-windows\platforms 'C:\Program Files (x86)\Android\android-sdk\platforms'
+new-alias -name y -value "out-null" -Force #squelch extra y
 C:\prereq\pressy.exe # Accept Eulas
 android.bat update sdk -u
+sleep(100) #ensure this script does not return until y stops
