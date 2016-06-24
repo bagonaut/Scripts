@@ -1,5 +1,5 @@
 Import-Module BitsTransfer
-
+[System.Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem')
 $AndroidSDKUri = "https://dl.google.com/android/android-sdk_r24.4.1-windows.zip"
 $AndroidZip = "C:\prereq\AndroidSDK.zip"
 Start-BitsTransfer -Source $AndroidSDKUri -Destination $AndroidZip -Authentication Basic
