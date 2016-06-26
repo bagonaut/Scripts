@@ -38,10 +38,7 @@
         }
     Write-Output "Download Complete."
     }
-
-
         Write-Verbose 'Installing VS 2015 ...'
-
 
         # Populated by test function
         $adminFile = "C:\prereq\AdminFile_final.xml"
@@ -65,17 +62,58 @@
         Write-Output "Beginning install with the following params:"
         Write-Output $installerPath
         Write-Output $args
-        $startTime = [System.DateTime]::Now
+
+        #Start background job to check on SecondaryInstaller.exe. If your install lasts for more than 4 hours...
+        $secondaryMonitor = Start-Job -ScriptBlock{
+            $monitorStart = DateTime.NowUtc;
+            $monitorLength = [System.TimeSpan]::FromHours(4)
+            $endWatch = $false
+            do  {
+                if ((DateTime.NowUtc - $monitorStart) -gt ($monitorLength + [System.TimeSpan]::FromMinutes(10)) ) {
+                    $endWatch = $true;
+                    Write-Output "Aborting Secondary Installer Monitoring job.";
+                }
+                $secondaryInstallers = Get-Process -Name SecondaryInstaller
+                if ( -Not $secondaryInstallers -eq $null) {
+
+                    if ((DateTime.NowUtc - $monitorStart) -gt $monitorLength) {
+                        #if we are in the ten minute window and secondary installer is still running, kill all instances of secondary installer
+                        #possibly check log at $env:TEMP\VisualStudio2015_install_SecondaryInstaller_UX.log
+                        if ($secondaryInstallers.GetType() -eq "System.Object[]") { 
+                            { 
+                                Write-Output "Multiple Secondary Installer instances found. Killing. ";
+                                % {$_.Kill(); $endWatch = $true} 
+                            }
+                        }
+                        else {
+                            Write-Output "Killing Secondary Installer."
+                            $secondaryInstallers.Kill();
+                            $endWatch = $true;
+                        }
+                    }
+                }
+                sleep(1000 * 60) #sleep a minute
+
+            } Until ($endWatch -eq $true)
+
+        }#secondaryMonitor runs until it kills secondary install or 4 hours have elapsed
+
+        $startTime = [System.DateTime]::NowUtc
         try{
-        Start-Process -FilePath $installerPath -ArgumentList $args -Wait
-        C:\prereq\AndroidSetup.ps1
+            Start-Process -FilePath $installerPath -ArgumentList $args -Wait
+            #if we get here, kill the background job.
+            if ($secondaryMonitor.Finished -eq $false) {
+                $secondaryMonitor.StopJob(); 
+            }
+            Write-Output "Beginning Android Setup" #If android got interrupted by secondary install kill, this will patch android up.
+            C:\prereq\AndroidSetup.ps1
         }
         catch{
             Write-Output $_
             Set-MpPreference -DisableRealtimeMonitoring $false
         }
-        $endTime = [System.DateTime]::Now
+        $endTime = [System.DateTime]::NowUtc
         Write-Verbose -Message 'Testing if VS 2015 is installed or not ..'
         Set-MpPreference -DisableRealtimeMonitoring $false
-        $installTime = $startTime - $endTime
+        $installTime = $endTime - $startTime
         Write-Output "Install takes: " $installTime.ToString()
