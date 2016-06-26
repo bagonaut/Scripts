@@ -38,7 +38,11 @@
         }
     Write-Output "Download Complete."
     }
+
+
         Write-Verbose 'Installing VS 2015 ...'
+
+
 
         # Populated by test function
         $adminFile = "C:\prereq\AdminFile_final.xml"
@@ -66,12 +70,13 @@
         #Start background job to check on SecondaryInstaller.exe. If your install lasts for more than 4 hours...
         $secondaryMonitor = Start-Job -ScriptBlock{
             $monitorStart = DateTime.NowUtc;
-            $monitorLength = [System.TimeSpan]::FromHours(4)
-            $endWatch = $false
+            $monitorLength = [System.TimeSpan]::FromHours(4);
+            $endWatch = $false;
+            $backgroundLog = [System.IO.Path]::Combine($env:TEMP, "secondaryMonitor.log");
             do  {
                 if ((DateTime.NowUtc - $monitorStart) -gt ($monitorLength + [System.TimeSpan]::FromMinutes(10)) ) {
                     $endWatch = $true;
-                    Write-Output "Aborting Secondary Installer Monitoring job.";
+                    Write-Output "Aborting Secondary Installer Monitoring job." | Out-File -Append -FilePath $backgroundLog;
                 }
                 $secondaryInstallers = Get-Process -Name SecondaryInstaller
                 if ( -Not $secondaryInstallers -eq $null) {
@@ -81,12 +86,12 @@
                         #possibly check log at $env:TEMP\VisualStudio2015_install_SecondaryInstaller_UX.log
                         if ($secondaryInstallers.GetType() -eq "System.Object[]") { 
                             { 
-                                Write-Output "Multiple Secondary Installer instances found. Killing. ";
-                                % {$_.Kill(); $endWatch = $true} 
+                                Write-Output "Multiple Secondary Installer instances found. Killing. "| Out-File -Append -FilePath $backgroundLog;
+                                % {$_.Kill(); $endWatch = $true;} 
                             }
                         }
                         else {
-                            Write-Output "Killing Secondary Installer."
+                            Write-Output "Killing Secondary Installer."| Out-File -Append -FilePath $backgroundLog;
                             $secondaryInstallers.Kill();
                             $endWatch = $true;
                         }
