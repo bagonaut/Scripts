@@ -73,6 +73,7 @@
             $monitorLength = [System.TimeSpan]::FromHours(4);
             $endWatch = $false;
             $backgroundLog = [System.IO.Path]::Combine($env:TEMP, "secondaryMonitor.log");
+            Write-Output "Secondary Installer Monitoring job started." | Out-File -Append -FilePath $backgroundLog;
             do  {
                 if ((DateTime.NowUtc - $monitorStart) -gt ($monitorLength + [System.TimeSpan]::FromMinutes(10)) ) {
                     $endWatch = $true;
@@ -101,6 +102,7 @@
 
             } Until ($endWatch -eq $true)
 
+        Write-Output "Secondary Job died of old age." | Out-File -Append -FilePath $backgroundLog;
         }#secondaryMonitor runs until it kills secondary install or 4 hours have elapsed
 
         $startTime = [System.DateTime]::NowUtc
