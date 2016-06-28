@@ -1,23 +1,23 @@
         $secondaryMonitor = Start-Job -Name secondaryInstaller -ScriptBlock{
-            $monitorStart = DateTime.NowUtc;
+            $monitorStart = [System.DateTime]::UtcNow
             $monitorLength = [System.TimeSpan]::FromHours(4);
             $endWatch = $false;
-            $backgroundLog = [System.IO.Path]::Combine($env:TEMP, "secondaryMonitor.log");
+            $backgroundLog = [System.IO.Path]::Combine($env:TEMP, "SecondaryInstallerMonitor.log");
             Write-Output "Secondary Installer Monitoring job started." | Out-File -Append -FilePath $backgroundLog;
             do  {
-                if ((DateTime.NowUtc - $monitorStart) -gt ($monitorLength + [System.TimeSpan]::FromMinutes(10)) ) {
+                if (([System.DateTime]::UtcNow - $monitorStart) -gt ($monitorLength + [System.TimeSpan]::FromMinutes(10)) ) {
                     $endWatch = $true;
                     Write-Output "Aborting Secondary Installer Monitoring job." | Out-File -Append -FilePath $backgroundLog;
                 }
                 Write-Output "Looking For Secondary Installer" | Out-File -Append -FilePath $backgroundLog;
                 $secondaryInstallers = Get-Process -Name SecondaryInstaller
-                if ( -Not $secondaryInstallers -eq $null) {
+                if ($secondaryInstallers -ne $null) {
                     Write-Output "Secondary Installer Found. WatchTime = " + ([System.DateTime]::UtcNow - $monitorStart) | Out-File -Append -FilePath $backgroundLog;
  
-                    if ($secondaryInstallers.GetType() -eq "System.Object[]") { 
+                    if ($secondaryInstallers.GetType().ToString() -eq "System.Object[]") { 
                          
                         Write-Output "Multiple Secondary Installer instances found. "| Out-File -Append -FilePath $backgroundLog;
-                        % {
+                        $secondaryInstallers | % {
                             if (([System.DateTime]::UtcNow - $_.StartTime) -gt $monitorLength) {
                                 Write-Output "Killing " + $_.Name + $_.Id | Out-File -Append -FilePath $backgroundLog;
                                 $_.Kill(); 
@@ -41,3 +41,4 @@
 
         Write-Output "Secondary Job died of old age." | Out-File -Append -FilePath $backgroundLog;
         }#secondaryMonitor runs until it kills secondary install or 4 hours have elapsed
+            
