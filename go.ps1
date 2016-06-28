@@ -68,7 +68,7 @@
         Write-Output $args
 
         #Start background job to check on SecondaryInstaller.exe. If your install lasts for more than 4 hours...
-        $secondaryMonitor = Start-Job -ScriptBlock{
+                $secondaryMonitor = Start-Job -ScriptBlock{
             $monitorStart = DateTime.NowUtc;
             $monitorLength = [System.TimeSpan]::FromHours(4);
             $endWatch = $false;
@@ -79,6 +79,7 @@
                     $endWatch = $true;
                     Write-Output "Aborting Secondary Installer Monitoring job." | Out-File -Append -FilePath $backgroundLog;
                 }
+                Write-Output "Looking For Secondary Installer" | Out-File -Append -FilePath $backgroundLog;
                 $secondaryInstallers = Get-Process -Name SecondaryInstaller
                 if ( -Not $secondaryInstallers -eq $null) {
 
@@ -98,12 +99,14 @@
                         }
                     }
                 }
-                sleep(1000 * 60) #sleep a minute
+                Write-Output "Sleeping 1 Minute." | Out-File -Append -FilePath $backgroundLog;
+                sleep(60) #sleep a minute
 
             } Until ($endWatch -eq $true)
 
         Write-Output "Secondary Job died of old age." | Out-File -Append -FilePath $backgroundLog;
         }#secondaryMonitor runs until it kills secondary install or 4 hours have elapsed
+
 
         $startTime = [System.DateTime]::NowUtc
         try{
