@@ -14,6 +14,14 @@
         $adminContents = $wc.DownloadString("https://raw.githubusercontent.com/bagonaut/Scripts/master/AndroidSetup.ps1")
         $adminContents | out-file C:\prereq\AndroidSetup.ps1 
     }
+
+    if (-Not [System.IO.File]::Exists("C:\prereq\Agent.zip")) {
+        Write-output "Downloading VSTS Build Agent";
+        $wc = New-Object System.Net.WebClient #github does not like BITS
+        $wc.DownloadFile("https://github.com/Microsoft/vsts-agent/releases/download/v2.102.1/vsts-agent-win7-x64-2.102.1.zip", "C:\prereq\Agent.zip") 
+        [System.Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem')
+        [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\prereq\Agent.zip", "C:\prereq\Agent")
+    }
     if (-Not [System.IO.File]::Exists("C:\prereq\VS.iso")) {
         Write-output "Downloading iso (Visual Studio 2015 Community Image)";
         $wc = New-Object System.Net.WebClient
@@ -88,20 +96,25 @@
                          
                         Write-Output "Multiple Secondary Installer instances found. "| Out-File -Append -FilePath $backgroundLog;
                         $secondaryInstallers | % {
-                            if (([System.DateTime]::UtcNow - $_.StartTime) -gt $monitorLength) {
+                            $installerLifespan = ([System.DateTime]::UtcNow - $_.StartTime)
+                            if ($installerLifespan -gt $monitorLength) {
                                 Write-Output "Killing " + $_.Name + $_.Id | Out-File -Append -FilePath $backgroundLog;
                                 $_.Kill(); 
                                 $endWatch = $true;
                             }
+                            Write-Output "Installer $_ for: $installerLifespan" | Out-File -Append -FilePath $backgroundLog; #who needs formatting?
                         } 
                         
                     }
                     else { #assuming a single return
-                        if (([System.DateTime]::UtcNow - $secondaryInstallers.StartTime) -gt $monitorLength) {
+                        $installerLifespan = ([System.DateTime]::UtcNow - $secondaryInstallers.StartTime)
+                        if ($installerLifespan -gt $monitorLength) {
                             Write-Output "Killing Secondary Installer." | Out-File -Append -FilePath $backgroundLog;
                             $secondaryInstallers.Kill();
                             $endWatch = $true;
                         }
+                        Write-Output "Single Job alive for: $installerLifespan" | Out-File -Append -FilePath $backgroundLog;
+
                     }                    
                 }
                 Write-Output "Sleeping 1 Minute." | Out-File -Append -FilePath $backgroundLog;
