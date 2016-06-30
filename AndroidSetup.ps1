@@ -19,7 +19,7 @@ Write-Output "Setting Path Env"
 [Environment]::SetEnvironmentVariable("Path", $Env:Path, [System.EnvironmentVariableTarget]::Machine)
 write-output $env:PATH
 #Eula Acceptor
-new-alias -name y -value "out-null" -Force #squelch extra y
+new-alias -name y -value "out-null" -Force -Scope Global#squelch extra y
 get-alias y
 y
 C:\prereq\pressy.exe # Accept Eulas
