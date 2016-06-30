@@ -68,7 +68,7 @@
 
         Set-MpPreference -DisableRealtimeMonitoring $true
         $FirstCD = get-PSDrive | where-object {$_.Free -eq 0}
-        if ($FirstCD.GetType() -eq "System.Object[]") {$FirstCD = $FirstCD[0]}
+        if ($FirstCD.GetType().ToString() -eq "System.Object[]") {$FirstCD = $FirstCD[0]}
         $installerPath = $FirstCD.Root + "vs_community.exe"
         $args = [System.String]::concat("/Quiet /AdminFile ", $adminFile, " /Log ",  "$env:TEMP\VisualStudio2015_install.log", " /CustomInstallPath ", $installDir )
         Write-Output "Beginning install with the following params:"
