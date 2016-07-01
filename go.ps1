@@ -23,7 +23,7 @@
         [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\prereq\Agent.zip", "C:\prereq\Agent")
     }
     if (-Not [System.IO.File]::Exists("C:\prereq\VS.iso")) {
-        Write-output "Downloading iso (Visual Studio 2015 Community Image)";
+        Write-output "Downloading iso (Visual Studio 2015 Community Image) and Tasky Xamarin Sample";
         $wc = New-Object System.Net.WebClient
         try {
             $get = "/download/f/d/c/fdce5d40-87d3-4bd6-9139-2a7638b96174/vs2015.2.com_enu.iso"
@@ -34,11 +34,17 @@
             Start-BitsTransfer -Source $uri.ToString() -Destination C:\prereq\vs_2015.iso
             Mount-DiskImage -ImagePath C:\prereq\vs_2015.iso
             #get tasky demo
+            $taskyProj = "https://raw.githubusercontent.com/bagonaut/Scripts/master/TaskyAndroid.csproj"
             $taskyZipUri = "https://developer.xamarin.com/content/Tasky/Tasky.zip"
             $TaskyZip = "C:\prereq\Tasky.zip"
             Start-BitsTransfer -source $taskyZipUri -Destination $TaskyZip -Authentication Basic
             [System.Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem')
             [System.IO.Compression.ZipFile]::ExtractToDirectory($TaskyZip, [System.IO.Path]::GetDirectoryName($TaskyZip) + "\Tasky")
+            #Because Tasky from Xamarin website is configured to build using API 15, which is no longer supported by android update sdk
+            # I have updated the csproj to loop in a more recent platform.
+            Copy-Item -Path "C:\prereq\Tasky\TaskyAndroid\TaskyAndroid.csproj" -Destination "C:\prereq\Tasky\TaskyAndroid\TaskyAndroid.csproj.old"
+            Remove-Item -Path "C:\prereq\Tasky\TaskyAndroid\TaskyAndroid.csproj" -Force
+            Start-BitsTransfer -source $taskyProj -Destination "C:\prereq\Tasky\TaskyAndroid\TaskyAndroid.csproj" -Authentication Basic
 
         }
         catch{
@@ -144,3 +150,6 @@
         Set-MpPreference -DisableRealtimeMonitoring $false
         $installTime = $endTime - $startTime
         Write-Output "Install takes: " $installTime.ToString()
+        Write-Output "Press enter to restart machine and complete installation. After reboot, open C:\prereq\Tasky\Tasky.sln to see Camarin in action."
+        pause
+        Restart-Computer
