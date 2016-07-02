@@ -20,9 +20,20 @@ Write-Output "Setting Path Env"
 write-output $env:PATH
 # So much hacking to get this Eula Accepted.
 $p = [System.Diagnostics.Process]::GetCurrentProcess()
-$sig = '[DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);'
-Add-Type -MemberDefinition $sig -name NativeMethods -namespace Win32
-[Win32.NativeMethods]::ShowWindowAsync($p.MainWindowHandle, 4) #Ensuring that powershell window as invoked from go.ps1 has focus for the pressy hack
+$p = [System.Diagnostics.Process]::GetCurrentProcess()
+$swa = '[DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);'
+$sfw = '[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);'
+$sf = '[DllImport("user32.dll")] public static extern IntPtr SetFocus(IntPtr hWnd);'
+Add-Type -MemberDefinition $swa -name SWA -namespace Win32
+Add-Type -MemberDefinition $sfw -name SFW -namespace Win32
+Add-Type -MemberDefinition $sf -name SF -namespace Win32
+# shotgun approach
+[Win32.SWA]::ShowWindowAsync($p.MainWindowHandle, 5)
+sleep(1)
+[Win32.SFW]::SetForegroundWindow($p.MainWindowHandle)
+sleep(1)
+[Win32.SF]::SetFocus($p.MainWindowHandle) 
+#Ensuring that powershell window as invoked from go.ps1 has focus for the pressy hack
 #Eula Acceptor
 new-alias -name y -value "out-null" -Force -Scope Global #squelch extra y
 y
