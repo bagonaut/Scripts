@@ -18,6 +18,11 @@ $Env:Path = $PathVar
 Write-Output "Setting Path Env"
 [Environment]::SetEnvironmentVariable("Path", $Env:Path, [System.EnvironmentVariableTarget]::Machine)
 write-output $env:PATH
+# So much hacking to get this Eula Accepted.
+$p = [System.Diagnostics.Process]::GetCurrentProcess()
+$sig = '[DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);'
+Add-Type -MemberDefinition $sig -name NativeMethods -namespace Win32
+[Win32.NativeMethods]::ShowWindowAsync($p.MainWindowHandle, 4) #Ensuring that powershell window as invoked from go.ps1 has focus for the pressy hack
 #Eula Acceptor
 new-alias -name y -value "out-null" -Force -Scope Global #squelch extra y
 y
@@ -27,6 +32,5 @@ $updateCmd = [System.IO.Path]::Combine($Env:ANDROID_HOME, "tools\android.bat")
 $updateArgs = "update sdk -u"
 cd ([System.IO.Path]::Combine($Env:ANDROID_HOME, "tools")) #Your java treachery knows no bounds
 Invoke-Expression " & '$updateCmd' $updateArgs"
-
 
 
