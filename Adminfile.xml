@@ -4,8 +4,6 @@
   <SelectableItemCustomizations>
     <SelectableItemCustomization Id="VSUV3RTMV1" Hidden="no" Selected="yes" FriendlyName="Visual Studio 2015 Update 3" />
     <SelectableItemCustomization Id="MicroUpdateV3" Selected="yes" FriendlyName="MicroUpdate 3.0 for Visual Studio 2015 Update 3" />
-    <SelectableItemCustomization Id="NativeLanguageSupport_VCV1" Hidden="no" Selected="yes" FriendlyName="Common Tools for Visual C++ 2015" />
-    <SelectableItemCustomization Id="NativeLanguageSupport_MFCV1" Hidden="no" Selected="yes" FriendlyName="Microsoft Foundation Classes for C++" />
     <SelectableItemCustomization Id="NativeLanguageSupport_XPV1" Hidden="no" Selected="yes" FriendlyName="Windows XP Support for C++" />
     <SelectableItemCustomization Id="Windows10_ToolsAndSDKV12" Hidden="no" Selected="yes" FriendlyName="Tools (1.4) and Windows 10 SDK (10.0.10586)" />
     <SelectableItemCustomization Id="XamarinVSCoreV4" Hidden="no" Selected="yes" FriendlyName="C#/.NET (Xamarin v4.1.0)" />
@@ -48,6 +46,8 @@
     <SelectableItemCustomization Id="VSUV1PreReqV1" Selected="no" FriendlyName="Visual Studio 2015 Update 1 Prerequisite" />
     <SelectableItemCustomization Id="VSUV2RTMV2" Selected="no" FriendlyName="Visual Studio 2015 Update 2" />
     <SelectableItemCustomization Id="MicroUpdateV3.1" Selected="no" FriendlyName="Update for Microsoft Visual Studio 2015 (KB3165756)" />
+    <SelectableItemCustomization Id="NativeLanguageSupport_VCV1" Hidden="no" Selected="no" FriendlyName="Common Tools for Visual C++ 2015" />
+    <SelectableItemCustomization Id="NativeLanguageSupport_MFCV1" Hidden="no" Selected="no" FriendlyName="Microsoft Foundation Classes for C++" />
     <SelectableItemCustomization Id="Win81SDK_HiddenV1" Hidden="no" Selected="no" FriendlyName="Windows 8.1 SDK and Universal CRT SDK" />
     <SelectableItemCustomization Id="FSharpV1" Hidden="no" Selected="no" FriendlyName="Visual F#" />
     <SelectableItemCustomization Id="PythonToolsForVisualStudioV6" Hidden="no" Selected="no" FriendlyName="Python Tools for Visual Studio (June 2016)" />
