@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -33,17 +34,19 @@ namespace WindowsFormsApplication1
                 //    int x = 1;
                 //}
                 // more java treachery
+
+                string logFileName = Path.Combine(Path.GetTempPath(), "EulaAcceptor.log");
                 uint myTid = (uint)Environment.CurrentManagedThreadId;
                 uint PStid;
                 bool toBreak = false;
                 bool.TryParse(Environment.GetEnvironmentVariable("toBreak"), out toBreak);
-
+                File.WriteAllText(logFileName, "Android Setup Powershell toBreak: " + toBreak.ToString());
                 bool swaResult;
                 bool sfwResult;
                 IntPtr sfResult;
                 if (uint.TryParse(Environment.GetEnvironmentVariable("androidSetupPStid"), out PStid) )
                 {
-                    
+                    File.WriteAllText(logFileName, "Android Setup Powershell Thread ID: " + PStid.ToString());
 
                     if (toBreak)
                     {
@@ -53,8 +56,11 @@ namespace WindowsFormsApplication1
                     AttachThreadInput(myTid, PStid, true);
                     IntPtr psTid = new IntPtr(Convert.ToInt32(PStid));
                     swaResult = ShowWindowAsync(psTid, 5);
+                    File.WriteAllText(logFileName, "ShowWindowAsync Result: " + swaResult.ToString());
                     sfwResult = SetForegroundWindow(psTid);
+                    File.WriteAllText(logFileName, "ShowForegroundWindow Result: " + sfwResult.ToString());
                     sfResult = SetFocus(psTid);
+                    File.WriteAllText(logFileName, "SetFocus Result: " + sfResult.ToString());
                 }
                 
                 //Form1.AttachThreadInput()
