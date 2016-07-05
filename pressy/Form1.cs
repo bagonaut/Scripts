@@ -36,31 +36,39 @@ namespace WindowsFormsApplication1
                 // more java treachery
 
                 string logFileName = Path.Combine(Path.GetTempPath(), "EulaAcceptor.log");
-                uint myTid = (uint)Environment.CurrentManagedThreadId;
+                uint myTid = (uint)AppDomain.GetCurrentThreadId();
                 uint PStid;
+                uint psHwnd;
                 bool toBreak = false;
                 bool.TryParse(Environment.GetEnvironmentVariable("toBreak"), out toBreak);
-                File.WriteAllText(logFileName, "Android Setup Powershell toBreak: " + toBreak.ToString());
+                File.AppendAllText(logFileName, " Android Setup Powershell toBreak: " + toBreak.ToString() + Environment.NewLine);
+                bool attachResult;
                 bool swaResult;
                 bool sfwResult;
                 IntPtr sfResult;
+                //$env:androidSetupPShwnd = [System.Diagnostics.Process]::GetCurrentProcess().MainWindowHandle
+                //[Environment]::SetEnvironmentVariable("androidSetupPShd", $Env:androidSetupPShwnd, [System.EnvironmentVariableTarget]::Machine)
+                uint.TryParse(Environment.GetEnvironmentVariable("androidSetupPShwnd"), out psHwnd);
                 if (uint.TryParse(Environment.GetEnvironmentVariable("androidSetupPStid"), out PStid) )
                 {
-                    File.WriteAllText(logFileName, "Android Setup Powershell Thread ID: " + PStid.ToString());
+                    File.AppendAllText(logFileName, " Android Setup Powershell Thread ID: " + PStid.ToString() + Environment.NewLine);
+                    File.AppendAllText(logFileName, " Android Setup Powershell Main Window Handle: " + psHwnd.ToString() + Environment.NewLine);
+                    File.AppendAllText(logFileName, " pressy Thread ID: " + myTid.ToString() + Environment.NewLine);
 
                     if (toBreak)
                     {
                         Debugger.Break();
                     }
 
-                    AttachThreadInput(myTid, PStid, true);
-                    IntPtr psTid = new IntPtr(Convert.ToInt32(PStid));
-                    swaResult = ShowWindowAsync(psTid, 5);
-                    File.WriteAllText(logFileName, "ShowWindowAsync Result: " + swaResult.ToString());
-                    sfwResult = SetForegroundWindow(psTid);
-                    File.WriteAllText(logFileName, "ShowForegroundWindow Result: " + sfwResult.ToString());
-                    sfResult = SetFocus(psTid);
-                    File.WriteAllText(logFileName, "SetFocus Result: " + sfResult.ToString());
+                    attachResult = AttachThreadInput(myTid, PStid, true);
+                    File.AppendAllText(logFileName, " Attach Result: " + attachResult.ToString() + Environment.NewLine);
+                    IntPtr pshwnd = new IntPtr(Convert.ToInt32(psHwnd));
+                    swaResult = ShowWindowAsync(pshwnd, 5);
+                    File.AppendAllText(logFileName, " ShowWindowAsync Result: " + swaResult.ToString() + Environment.NewLine);
+                    sfwResult = SetForegroundWindow(pshwnd);
+                    File.AppendAllText(logFileName, " ShowForegroundWindow Result: " + sfwResult.ToString() + Environment.NewLine);
+                    sfResult = SetFocus(pshwnd);
+                    File.AppendAllText(logFileName, " SetFocus Result: " + sfResult.ToString() + Environment.NewLine);
                 }
                 
                 //Form1.AttachThreadInput()
