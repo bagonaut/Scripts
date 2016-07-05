@@ -1,5 +1,5 @@
     $xamgolog = [System.IO.Path]::Combine($env:TEMP, "XamGo.log");
-    Out-File "Beginning Xamarin Install" -Append -FilePath $xamgolog
+    "Beginning Xamarin Install" | Out-File  -Append -FilePath $xamgolog
 
     # Create directory for installation artifacts.
     if (-Not [System.IO.Directory]::Exists("C:\prereq")) {Write-output "Making prereq directory C:\prereq" | Out-File -Append -FilePath $xamgolog; md C:\prereq}
