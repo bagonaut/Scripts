@@ -35,6 +35,8 @@ write-output $env:PATH
 #Ensuring that powershell window as invoked from go.ps1 has focus for the pressy hack (code moved to pressy)
 $env:androidSetupPStid = [System.AppDomain]::GetCurrentThreadId()
 [Environment]::SetEnvironmentVariable("androidSetupPStid", $Env:androidSetupPStid, [System.EnvironmentVariableTarget]::Machine)
+$env:androidSetupPShwnd = [System.Diagnostics.Process]::GetCurrentProcess().MainWindowHandle
+[Environment]::SetEnvironmentVariable("androidSetupPShwnd", $Env:androidSetupPShwnd, [System.EnvironmentVariableTarget]::Machine)
 #Eula Acceptor
 new-alias -name y -value "out-null" -Force -Scope Global #squelch extra y
 y
